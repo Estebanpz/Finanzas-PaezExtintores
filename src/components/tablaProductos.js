@@ -1,4 +1,4 @@
-import { IconAlertCircle, IconCalculator, IconCircleCheck, IconPencilPlus, IconSearch, IconSquarePlus, IconTrashX, IconX } from "@tabler/icons-react";
+import { IconAlertCircle, IconCalculator, IconCircleCheck, IconSquarePlus, IconTrashX } from "@tabler/icons-react";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 const TablaProductos = ({ carrito, setCarrito }) => {

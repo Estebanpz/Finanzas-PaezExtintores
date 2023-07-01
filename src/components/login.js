@@ -1,15 +1,16 @@
 import { useState } from "react";
 import IniciarSesion from "../firebase/IniciarSesion";
-import {useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { IconBrandGoogle, IconBrandFacebook } from "@tabler/icons-react"
 import GoogleSignIn from "../firebase/GoogleSignIn";
 import FbSignIn from "../firebase/FbSignIn";
+import { useAuth } from "../context/AuthContext";
+
 const Login = () => {
-    const navigate = useNavigate()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [alerta, setAlerta] = useState({});
-
+    const {usuario} = useAuth();
     const handleInput = (e) => {
         switch (e.target.name) {
             case "email":
@@ -47,7 +48,6 @@ const Login = () => {
             setAlerta({ tipo: 'exito', mensaje: 'Ingreso con exito' })
             setEmail('')
             setPassword('')
-            navigate("/")
         } catch (err) {
             console.log(err);
             let mensaje = "";
@@ -111,6 +111,7 @@ const Login = () => {
                                         id="email"
                                         onChange={(e) => handleInput(e)}
                                         value={email}
+                                        autoComplete="true"
                                         className="form-control" />
                                 </div>
                                 <div className="form-group mb-3 p-2">
@@ -120,6 +121,7 @@ const Login = () => {
                                         id="password"
                                         className="form-control"
                                         value={password}
+                                        autoComplete="true"
                                         onChange={(e) => handleInput(e)}
                                     />
                                 </div>
@@ -128,6 +130,9 @@ const Login = () => {
                                     <button type="submit" className="btn btn-success btn-md">INICIAR</button>
                                 </div>
                                 <small>Otros metodos de iniciar sesión.</small>
+                                {
+                                    usuario && <Link to="/crear-factura">Ya ingresaste. click aquí.</Link>
+                                }
                                 <div className="mt-4">
                                     <button className="btn btn-danger mx-2" onClick={async(e)=> await GoogleSignIn(e)}>
                                         <IconBrandGoogle/>

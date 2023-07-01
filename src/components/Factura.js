@@ -2,9 +2,37 @@ import { IconShoppingCart } from "@tabler/icons-react";
 import TablaProductos from "./tablaProductos";
 import ModalCrearUsuario from "./modalCrearUsuario";
 import ModalBuscarUsuario from "./ModalBuscarUsuario";
+import { DayPicker } from "react-day-picker";
+import { format } from "date-fns";
 import { useState } from "react";
+import "react-day-picker/dist/style.css"
+import Cliente from "./Cliente";
 const Factura = () => {
+    let footer = <p>Por favor selecciona una fecha</p>
+
     const [carrito, setCarrito] = useState([]);
+    const [fecha, setFecha] = useState();
+    const [cliente, setCliente] = useState('');
+    const [mostrar, setMostrar] = useState('')
+    if (fecha) {
+        footer = <p>Tu fecha es: {format(fecha, 'PP')}</p>
+        console.log(JSON.parse(fecha));
+    }
+    const css = `
+    .my-today {
+    font-weight: bold;
+    font-size: 140%; 
+    color: red;
+    background: url(https://media3.giphy.com/media/ujpaHBFQxnZIALTObQ/giphy.gif);
+    background-size: cover;
+    }
+    .my-selected:not([disabled]) {
+    font-weight: bold; 
+    border: 2px solid currentColor;
+    background: url(https://media.tenor.com/TbJMxT_BQvgAAAAC/sussy.gif);
+    background-size: cover;
+    }
+`;
     return (<>
         <main className="container">
             <div className="row">
@@ -18,16 +46,30 @@ const Factura = () => {
                             {/* MODAL BUSCAR CLIENTE*/}
 
                             <li className="list-group-item">
-                                <ModalBuscarUsuario />
+                                <ModalBuscarUsuario cliente={cliente} setCliente={setCliente}
+                                    mostrar={mostrar} setMostrar={setMostrar} />
                             </li>
+
                             {/* FECHA DE VENTA*/}
                             <li className="list-group-item">
                                 <div className="row">
                                     <div className="col text-center">
                                         <label className="form-label">Fecha de venta</label>
                                     </div>
-                                    <div className="col">
-                                        <input type="date" className="form-control" required />
+                                    <div className="col-sm h-50">
+                                        <DayPicker
+                                            mode="single"
+                                            selected={fecha}
+                                            onSelect={setFecha}
+                                            footer={footer}
+                                            showOutsideDays
+                                            numberOfMonths={1}
+                                            styles={{ dropdown: 'yes' }}
+                                            modifiersClassNames={{
+                                                selected: 'my-selected',
+                                                today: "my-today"
+                                            }}
+                                        />
                                     </div>
                                 </div>
                             </li>
@@ -50,8 +92,8 @@ const Factura = () => {
                                 <span className="h5">Productos</span>
                             </li>
                         </ul>
-
-                        <TablaProductos carrito={carrito} setCarrito = {setCarrito}/>
+                        {cliente && cliente.length > 0 && <Cliente cliente={cliente} mostrar={mostrar} />}
+                        <TablaProductos carrito={carrito} setCarrito={setCarrito} />
                     </div>
                 </div>
             </div>
