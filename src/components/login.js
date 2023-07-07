@@ -1,16 +1,13 @@
 import { useState } from "react";
 import IniciarSesion from "../firebase/IniciarSesion";
 import { Link } from "react-router-dom";
-import { IconBrandGoogle, IconBrandFacebook } from "@tabler/icons-react"
+import { IconBrandGoogle, IconBrandFacebook, IconShieldFilled } from "@tabler/icons-react"
 import GoogleSignIn from "../firebase/GoogleSignIn";
 import FbSignIn from "../firebase/FbSignIn";
-import { useAuth } from "../context/AuthContext";
-
+import Swal from "sweetalert2";
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [alerta, setAlerta] = useState({});
-    const {usuario} = useAuth();
     const handleInput = (e) => {
         switch (e.target.name) {
             case "email":
@@ -28,120 +25,118 @@ const Login = () => {
         e.preventDefault();
         const expresionRegular = /[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/;
         if (!expresionRegular.test(email)) {
-            setAlerta({
-                tipo: 'error',
-                mensaje: 'Por favor ingresa un correo valido'
-            });
+            Swal.fire("Info.", "Ingrese un correo valido", "info")
             return;
         }
 
         if (email === '' || password === '') {
-            setAlerta({
-                tipo: 'error',
-                mensaje: 'Todos los campos son obligatorios'
-            });
-
+            Swal.fire("Info.", "Todos los campos son validos.", "warning")
             return;
         }
         try {
             await IniciarSesion(email, password);
-            setAlerta({ tipo: 'exito', mensaje: 'Ingreso con exito' })
+            Swal.fire("Exito", "Ha ingresado correctamente.", "success")
             setEmail('')
             setPassword('')
         } catch (err) {
             console.log(err);
-            let mensaje = "";
-
             switch (err.code) {
                 case "auth/weak-password":
-                    mensaje = "La contraseña debe ser de mínimo 6 digitos";
-                    setAlerta({
-                        tipo: 'error',
-                        mensaje
-                    });
+                    Swal.fire("Error.", "La contraseña debe ser de mínimo 6 digitos", "error")
                     break;
                 case "auth/email-already-in-use":
-                    mensaje = "Este correo ya está en uso";
-                    setAlerta({ tipo: 'error', mensaje });
+                    Swal.fire("Error", "Este correo ya está en uso", "info")
                     break;
 
                 case "auth/invalid-email":
-                    mensaje = "Este correo no es valido";
-                    setAlerta({ tipo: 'error', mensaje });
+                    Swal.fire("Error", "Este correo no es valido", "question");
                     break;
 
                 case "auth/wrong-password":
-                    mensaje = "Contraseña incorrecta"
-                    setAlerta({ tipo: 'error', mensaje });
+                    Swal.fire("Info", "La contraseña es incorrecta", "warning")
                     break;
                 default:
-                    mensaje = err.message
-                    setAlerta({ tipo: 'error', mensaje })
+                    Swal.fire("Error", err.message, "error")
                     break;
             }
         };
     }
+
     return (<>
-        <div className="container">
-            <div className="row">
-                <div className="col-md-6 offset-md-3">
-                    <div className="card text-bg-light mb-3 mt-5">
-                        <div className="card-header text-center">
-                            <h3>INICIAR SESION</h3>
+        <div className="container login w-75 bg-light my-1 rounded shadow h-100">
+            <div className="row align-items-stretch">
+                <div className="col bg d-sm-none d-md-none d-xl-block">
+
+                </div>
+                <div className="col">
+                    <div className="text-end">
+                        <IconShieldFilled style={{ color: 'red' }} size={48} />
+                    </div>
+                    <h2 className="fw-bold text-center py-5">Bienvenido</h2>
+                    <form onSubmit={(e) => handleSubmit(e)}>
+                        <div className="mb-2">
+                            <label htmlFor="email" className="form-label">Correo Electronico</label>
+                            <input type="email"
+                                name="email"
+                                id="email"
+                                onChange={(e) => handleInput(e)}
+                                value={email}
+                                autoComplete="true"
+                                className="form-control" />
                         </div>
-                        <div className="card-body">
-                            <form action="#" onSubmit={(e) => handleSubmit(e)}>
-                                {alerta && alerta.tipo === 'error' && (
-                                    <>
-                                        <div className="alert alert-danger" role="alert">
-                                            {alerta.mensaje}!
+                        <div className="mb-2">
+                            <label htmlFor="password" className="form-label">CONTRASEÑA</label>
+                            <input type="password"
+                                name="password"
+                                id="password"
+                                className="form-control"
+                                value={password}
+                                autoComplete="true"
+                                onChange={(e) => handleInput(e)}
+                            />
+                        </div>
+                        <div className="d-grid">
+                            <input type="submit" className="btn btn-primary" value="Iniciar Sesion" />
+                        </div>
+                        <div className="my-3">
+                            <span>No tienes cuenta? <Link to="/crear-cuenta">Regístrate</Link></span>
+                            <br />
+                            <span><Link>Recuperar Contraseña</Link></span>
+                        </div>
+                    </form>
+
+                    {/* LOGIN CON REDES SOCIALES*/}
+                    <div className="container w-100 my-5">
+                        <div className="row text-center">
+                            <div className="col-12">
+                                Iniciar Sesión
+                            </div>
+                            <div className="row">
+                                <div className="col">
+                                    <button className="btn btn-outline-danger w-100 my-1" onClick={async (e) => await GoogleSignIn(e)}>
+                                        <div className="row align-items-center">
+                                            <div className="col-2">
+                                                <IconBrandGoogle size={32} />
+                                            </div>
+                                            <div className="col-10 text-center">
+                                                Google
+                                            </div>
                                         </div>
-                                    </>
-                                )}
-
-                                {alerta.tipo === "exito" && (
-                                    <div className="alert alert-success" role="alert">
-                                        {alerta.mensaje}!
-                                    </div>
-                                )}
-                                <div className="form-group mb-3 p-2">
-                                    <label htmlFor="email">USUARIO</label>
-                                    <input type="email"
-                                        name="email"
-                                        id="email"
-                                        onChange={(e) => handleInput(e)}
-                                        value={email}
-                                        autoComplete="true"
-                                        className="form-control" />
-                                </div>
-                                <div className="form-group mb-3 p-2">
-                                    <label htmlFor="password">CONTRASEÑA</label>
-                                    <input type="password"
-                                        name="password"
-                                        id="password"
-                                        className="form-control"
-                                        value={password}
-                                        autoComplete="true"
-                                        onChange={(e) => handleInput(e)}
-                                    />
-                                </div>
-
-                                <div className="d-grid gap-2 mt-3">
-                                    <button type="submit" className="btn btn-success btn-md">INICIAR</button>
-                                </div>
-                                <small>Otros metodos de iniciar sesión.</small>
-                                {
-                                    usuario && <Link to="/crear-factura">Ya ingresaste. click aquí.</Link>
-                                }
-                                <div className="mt-4">
-                                    <button className="btn btn-danger mx-2" onClick={async(e)=> await GoogleSignIn(e)}>
-                                        <IconBrandGoogle/>
-                                    </button>
-                                    <button className="btn btn-primary mx-2" onClick={async(e)=> await FbSignIn(e)}>
-                                        <IconBrandFacebook/>
                                     </button>
                                 </div>
-                            </form>
+                                <div className="col">
+                                    <button className="btn btn-outline-primary w-100 my-1" onClick={async (e) => await FbSignIn(e)}>
+                                        <div className="row align-items-center">
+                                            <div className="col-2">
+                                                <IconBrandFacebook size={32} />
+                                            </div>
+                                            <div className="col-10 text-center">
+                                                Facebook
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

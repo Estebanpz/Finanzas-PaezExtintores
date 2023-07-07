@@ -58,14 +58,14 @@ const TablaProductos = ({ carrito, setCarrito }) => {
                 valorTotal,
                 valorReal: valor
             }
-            console.log(nuevoArticulo);
             setCarrito([...carrito, nuevoArticulo])
 
             setArticulo('')
             setCantidadArticulo(1)
             setValorUnidad(1)
             setValorTotal(1);
-            console.log(carrito);
+        } else {
+            setalerta({ tipo: 'alerta', mensaje: 'Verifique los campos' })
         }
     }
 
@@ -87,7 +87,7 @@ const TablaProductos = ({ carrito, setCarrito }) => {
                 alerta && alerta.tipo === 'alerta' && <div className="alert alert-danger" id="alerta">
                     {alerta.mensaje} <IconAlertCircle />
                     <button type="button" className="ms-2 btn-close"
-                     onClick={() => document.getElementById('alerta').style.display="none"}
+                        onClick={() => document.getElementById('alerta').style.display = "none"}
                     />
                 </div>
             }
@@ -96,7 +96,7 @@ const TablaProductos = ({ carrito, setCarrito }) => {
                 alerta && alerta.tipo === 'exito' && <div className="alert alert-success" id="exito">
                     {alerta.mensaje} <IconCircleCheck />
                     <button type="button" className="ms-2 btn-close"
-                      onClick={()=> document.getElementById('exito').style.display="none"}
+                        onClick={() => document.getElementById('exito').style.display = "none"}
                     />
                 </div>
             }
@@ -120,7 +120,7 @@ const TablaProductos = ({ carrito, setCarrito }) => {
                                 name="articulo"
                                 value={articulo}
                                 onChange={(e) => handleArticulo(e)} />
-                            {articulo}
+                            
                         </td>
                         <td>
                             <input className="form-control"
@@ -237,7 +237,8 @@ const TablaProductos = ({ carrito, setCarrito }) => {
                 }
             </div>
             <div className="w-100 text-center">
-                <button className="btn btn-primary btn-lg w-50" onClick={() => addArticulo()}>
+                <button className="btn btn-warning " onClick={() => addArticulo()}>
+                    Agregar artículo
                     <IconSquarePlus />
                 </button>
             </div>

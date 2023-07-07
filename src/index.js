@@ -26,7 +26,7 @@ root.render(
             <Factura />
           </RutaPrivada>
         } />
-
+      
       </Routes>
     </BrowserRouter>
   </AuthProvider>
